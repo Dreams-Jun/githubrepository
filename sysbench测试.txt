@@ -48,3 +48,150 @@ queries：查询总数及qps
 transactions：事务总数及tps
 
 Latency-95th percentile：前95%的请求的最大响应时间
+
+
+sysbench压测磁盘IO
+sysbench fileio help
+sysbench 1.0.5 (using system LuaJIT 2.0.4)
+ 
+fileio options:
+  --file-num=N              number of files to create [128]
+  --file-block-size=N       block size to use in all IO operations [16384]
+  --file-total-size=SIZE    total size of files to create [2G]
+  --file-test-mode=STRING   test mode {seqwr, seqrewr, seqrd, rndrd, rndwr, rndrw}
+  --file-io-mode=STRING     file operations mode {sync,async,mmap} [sync]
+  --file-async-backlog=N    number of asynchronous operatons to queue per thread [128]
+  --file-extra-flags=STRING additional flags to use on opening files {sync,dsync,direct} []
+  --file-fsync-freq=N       do fsync() after this number of requests (0 - don't use fsync()) [100]
+  --file-fsync-all[=on|off] do fsync() after each write operation [off]
+  --file-fsync-end[=on|off] do fsync() at the end of test [on]
+  --file-fsync-mode=STRING  which method to use for synchronization {fsync, fdatasync} [fsync]
+  --file-merged-requests=N  merge at most this number of IO requests if possible (0 - don't merge) [0]
+  --file-rw-ratio=N         reads/writes ratio for combined test [1.5]
+
+准备
+sysbench fileio \
+--file-num=4 \
+--file-total-size=2G \
+prepare
+
+sysbench fileio \
+--time=180 \
+--events=100000000 \
+--threads=1 \
+--file-num=4 \
+--file-total-size=2G \
+--file-io-mode=sync \
+--file-test-mode=rndrd \
+--file-block-size=16384 \
+run
+
+Threads started!
+
+
+File operations:
+    reads/s:                      233922.10
+    writes/s:                     0.00
+    fsyncs/s:                     0.00
+
+Throughput:
+    read, MiB/s:                  3655.03
+    written, MiB/s:               0.00
+
+General statistics:
+    total time:                          180.0000s
+    total number of events:              42106472
+
+Latency (ms):
+         min:                                  0.00
+         avg:                                  0.00
+         max:                                  2.88
+         95th percentile:                      0.00
+         sum:                             149603.62
+
+Threads fairness:
+    events (avg/stddev):           42106472.0000/0.00
+    execution time (avg/stddev):   149.6036/0.00
+
+清除
+sysbench fileio \
+--file-num=16 \
+--file-total-size=2G \
+cleanup
+
+Sysbench压测内存
+sysbench memory help
+sysbench 1.0.9 (using system LuaJIT 2.0.4)
+ 
+memory options:
+  --memory-block-size=SIZE    size of memory block for test [1K]
+  --memory-total-size=SIZE    total size of data to transfer [100G]
+  --memory-scope=STRING       memory access scope {global,local} [global]
+  --memory-hugetlb[=on|off]   allocate memory from HugeTLB pool [off]
+  --memory-oper=STRING        type of memory operations {read, write, none} [write]
+  --memory-access-mode=STRING memory access mode {seq,rnd} [seq]
+
+sysbench memory --memory-oper=read run
+
+Running memory speed test with the following options:
+  block size: 1KiB
+  total size: 102400MiB
+  operation: read
+  scope: global
+
+Initializing worker threads...
+
+Threads started!
+
+Total operations: 28872874 (2886606.01 per second)
+
+28196.17 MiB transferred (2818.95 MiB/sec)
+
+
+General statistics:
+    total time:                          10.0000s
+    total number of events:              28872874
+
+Latency (ms):
+         min:                                  0.00
+         avg:                                  0.00
+         max:                                  0.80
+         95th percentile:                      0.00
+         sum:                               2881.66
+
+Threads fairness:
+    events (avg/stddev):           28872874.0000/0.00
+    execution time (avg/stddev):   2.8817/0.00
+
+Sysbench压测CPU
+sysbench cpu help  
+sysbench 1.0.9 (using system LuaJIT 2.0.4)
+ 
+cpu options:
+  --cpu-max-prime=N upper limit for primes generator [10000]
+
+sysbench cpu  run
+
+Prime numbers limit: 10000
+
+Initializing worker threads...
+
+Threads started!
+
+CPU speed:
+    events per second:   738.28
+
+General statistics:
+    total time:                          10.0011s
+    total number of events:              7385
+
+Latency (ms):
+         min:                                  0.82
+         avg:                                  1.35
+         max:                                  3.14
+         95th percentile:                      1.67
+         sum:                               9944.10
+
+Threads fairness:
+    events (avg/stddev):           7385.0000/0.00
+    execution time (avg/stddev):   9.9441/0.00
