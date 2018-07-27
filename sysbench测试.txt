@@ -1,3 +1,4 @@
+yum install -y sysbench
 /usr/bin/sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=192.168.10.75 --mysql-port=3306 --mysql-db=sbtest --mysql-user=root --mysql-password=zh000925 --oltp-table-size=5000000 --oltp-tables-count=10 --threads=10 --time=120 --report-interval=10 --db-driver=mysql run
 
 Threads started!
